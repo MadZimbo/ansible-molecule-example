@@ -1,0 +1,216 @@
+<ossec_config>
+  <global>
+    <email_notification>yes</email_notification>
+    <email_to>christian.zimmermann@heidelberg-mobil.com</email_to>
+    <smtp_server>127.0.0.1</smtp_server>
+    <email_from>ossec@deepmap.net</email_from>
+    <email_reply_to>christian.zimmermann@heidelberg-mobil.com</email_reply_to>
+  </global>
+
+  <rules>
+    <include>rules_config.xml</include>
+    <include>pam_rules.xml</include>
+    <include>sshd_rules.xml</include>
+    <include>telnetd_rules.xml</include>
+    <include>syslog_rules.xml</include>
+    <include>arpwatch_rules.xml</include>
+    <include>symantec-av_rules.xml</include>
+    <include>symantec-ws_rules.xml</include>
+    <include>pix_rules.xml</include>
+    <include>named_rules.xml</include>
+    <include>smbd_rules.xml</include>
+    <include>vsftpd_rules.xml</include>
+    <include>pure-ftpd_rules.xml</include>
+    <include>proftpd_rules.xml</include>
+    <include>ms_ftpd_rules.xml</include>
+    <include>ftpd_rules.xml</include>
+    <include>hordeimp_rules.xml</include>
+    <include>roundcube_rules.xml</include>
+    <include>wordpress_rules.xml</include>
+    <include>cimserver_rules.xml</include>
+    <include>vpopmail_rules.xml</include>
+    <include>vmpop3d_rules.xml</include>
+    <include>courier_rules.xml</include>
+    <include>web_rules.xml</include>
+    <include>web_appsec_rules.xml</include>
+    <include>apache_rules.xml</include>
+    <include>nginx_rules.xml</include>
+    <include>php_rules.xml</include>
+    <include>mysql_rules.xml</include>
+    <include>postgresql_rules.xml</include>
+    <include>ids_rules.xml</include>
+    <include>squid_rules.xml</include>
+    <include>firewall_rules.xml</include>
+    <include>apparmor_rules.xml</include>
+    <include>cisco-ios_rules.xml</include>
+    <include>netscreenfw_rules.xml</include>
+    <include>sonicwall_rules.xml</include>
+    <include>postfix_rules.xml</include>
+    <include>sendmail_rules.xml</include>
+    <include>imapd_rules.xml</include>
+    <include>mailscanner_rules.xml</include>
+    <include>dovecot_rules.xml</include>
+    <include>ms-exchange_rules.xml</include>
+    <include>racoon_rules.xml</include>
+    <include>vpn_concentrator_rules.xml</include>
+    <include>spamd_rules.xml</include>
+    <include>msauth_rules.xml</include>
+    <include>mcafee_av_rules.xml</include>
+    <include>trend-osce_rules.xml</include>
+    <include>ms-se_rules.xml</include>
+    <!-- <include>policy_rules.xml</include> -->
+    <include>zeus_rules.xml</include>
+    <include>solaris_bsm_rules.xml</include>
+    <include>vmware_rules.xml</include>
+    <include>ms_dhcp_rules.xml</include>
+    <include>asterisk_rules.xml</include>
+    <include>ossec_rules.xml</include>
+    <include>attack_rules.xml</include>
+    <include>openbsd_rules.xml</include>
+    <include>clam_av_rules.xml</include>
+    <include>dropbear_rules.xml</include>
+    <include>sysmon_rules.xml</include>
+    <include>opensmtpd_rules.xml</include>
+    <include>local_rules.xml</include>
+  </rules>
+
+  <syscheck>
+    <!-- Frequency that syscheck is executed - default to every 22 hours -->
+    <frequency>79200</frequency>
+    <alert_new_files>yes</alert_new_files>
+    <auto_ignore>no</auto_ignore>
+
+    <!-- Directories to check  (perform all possible verifications) -->
+    <!-- <directories report_changes="yes" realtime="yes" check_all="yes">/etc,/usr/bin,/usr/sbin</directories> -->
+    <!-- <directories report_changes="yes" realtime="yes" check_all="yes">/bin,/sbin,/boot</directories> -->
+    <directories report_changes="yes" realtime="yes" check_all="yes" check_sha1sum="yes">/home/*/.ssh</directories>
+    <directories report_changes="yes" realtime="yes" check_all="yes" check_sha1sum="yes">/etc</directories>
+    <directories report_changes="yes" realtime="yes" check_all="yes" check_sha1sum="yes">/root/.ssh</directories>
+
+    <!-- Files/directories to ignore -->
+    <ignore>/etc/mtab</ignore>
+    <ignore>/etc/mnttab</ignore>
+    <ignore>/etc/hosts.deny</ignore>
+    <ignore>/etc/mail/statistics</ignore>
+    <ignore>/etc/random-seed</ignore>
+    <ignore>/etc/adjtime</ignore>
+    <ignore>/etc/httpd/logs</ignore>
+    <ignore>/etc/utmpx</ignore>
+    <ignore>/etc/wtmpx</ignore>
+    <ignore>/etc/cups/certs</ignore>
+    <ignore>/etc/dumpdates</ignore>
+    <ignore>/etc/svc/volatile</ignore>
+    <ignore>/etc/webmin</ignore>
+
+
+    <!-- Windows files to ignore -->
+    <ignore>C:\WINDOWS/System32/LogFiles</ignore>
+    <ignore>C:\WINDOWS/Debug</ignore>
+    <ignore>C:\WINDOWS/WindowsUpdate.log</ignore>
+    <ignore>C:\WINDOWS/iis6.log</ignore>
+    <ignore>C:\WINDOWS/system32/wbem/Logs</ignore>
+    <ignore>C:\WINDOWS/system32/wbem/Repository</ignore>
+    <ignore>C:\WINDOWS/Prefetch</ignore>
+    <ignore>C:\WINDOWS/PCHEALTH/HELPCTR/DataColl</ignore>
+    <ignore>C:\WINDOWS/SoftwareDistribution</ignore>
+    <ignore>C:\WINDOWS/Temp</ignore>
+    <ignore>C:\WINDOWS/system32/config</ignore>
+    <ignore>C:\WINDOWS/system32/spool</ignore>
+    <ignore>C:\WINDOWS/system32/CatRoot</ignore>
+  </syscheck>
+
+  <rootcheck>
+    <rootkit_files>/var/ossec/etc/shared/rootkit_files.txt</rootkit_files>
+    <rootkit_trojans>/var/ossec/etc/shared/rootkit_trojans.txt</rootkit_trojans>
+    <system_audit>/var/ossec/etc/shared/system_audit_rcl.txt</system_audit>
+    <system_audit>/var/ossec/etc/shared/cis_debian_linux_rcl.txt</system_audit>
+    <system_audit>/var/ossec/etc/shared/cis_rhel_linux_rcl.txt</system_audit>
+    <system_audit>/var/ossec/etc/shared/cis_rhel5_linux_rcl.txt</system_audit>
+  </rootcheck>
+
+  <global>
+    <white_list>127.0.0.1</white_list>
+    <white_list>::1</white_list>
+    <white_list>^localhost.localdomain$</white_list>
+    <white_list>10.0.4.254</white_list>
+    <white_list>10.0.4.9</white_list>
+    <white_list>10.0.4.10</white_list>
+    <white_list>10.0.4.6</white_list>
+  </global>
+
+  <remote>
+    <connection>secure</connection>
+  </remote>
+
+  <alerts>
+    <log_alert_level>1</log_alert_level>
+    <email_alert_level>7</email_alert_level>
+  </alerts>
+
+  <command>
+    <name>host-deny</name>
+    <executable>host-deny.sh</executable>
+    <expect>srcip</expect>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <command>
+    <name>firewall-drop</name>
+    <executable>firewall-drop.sh</executable>
+    <expect>srcip</expect>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <command>
+    <name>disable-account</name>
+    <executable>disable-account.sh</executable>
+    <expect>user</expect>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <command>
+    <name>restart-ossec</name>
+    <executable>restart-ossec.sh</executable>
+    <expect></expect>
+  </command>
+
+
+  <command>
+    <name>route-null</name>
+    <executable>route-null.sh</executable>
+    <expect>srcip</expect>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <!-- Files to monitor (localfiles) -->
+
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/var/log/auth.log</location>
+  </localfile>
+
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/var/log/syslog</location>
+  </localfile>
+
+  <localfile>
+    <log_format>syslog</log_format>
+    <location>/var/log/dpkg.log</location>
+  </localfile>
+
+  <localfile>
+    <log_format>command</log_format>
+    <command>df -P</command>
+  </localfile>
+
+  <localfile>
+    <log_format>full_command</log_format>
+    <command>netstat -tan |grep LISTEN |egrep -v '(127.0.0.1| ::1|6610|6611)' | sort</command>
+  </localfile>
+
+  <localfile>
+    <log_format>full_command</log_format>
+    <command>last -n 5</command>
+  </localfile>
+</ossec_config>

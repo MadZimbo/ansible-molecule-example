@@ -1,0 +1,77 @@
+---
+
+- name: install xinetd
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dependency.packages }}"
+  tags:
+    - update
+
+- name: uninstall old check_mk client
+  package:
+    name: check-mk-agent
+    state: absent
+
+- name: remove configuration files and plugins
+  file:
+    path: '{{ item.files }}'
+    state: absent
+  with_items:
+    - { files: '/etc/check_mk' }
+    - { files: '/etc/check-mk-agent' }
+    - { files: '/etc/xinetd.d/check_mk' }
+    - { files: '/usr/share/check-mk-agent' }
+    - { files: '/usr/share/check_mk' }
+
+- name: make sure that the agent cannot not installed from the epel repo
+  # unfortunately the yum_repository ansible module rewrites an existing epel repo definition, so it's not suitable (yet) for this task
+  # yum_repository:
+  #  name: epel
+  #  exclude: "{{ agent.packages }}"
+  ini_file:
+    dest: /etc/yum.repos.d/epel.repo
+    section: epel
+    option: exclude
+    value: "{{ agent.packages|join(',') }}"
+
+- name: copy newest check_mk client version
+  copy: src=check-mk-agent-1.2.8p26-1.noarch.rpm dest=/root owner=root group=root mode=0700
+
+- name: install newest check_mk client version
+  yum:
+    name: /root/check-mk-agent-1.2.8p26-1.noarch.rpm
+    state: present
+
+- name: copy plugins
+  copy: src="{{ item }}" dest=/usr/lib/check_mk_agent/plugins/ owner=root group=root mode=0755
+  with_items: "{{ agent.plugins }}"
+
+- name: allow connections from the OMD server
+  replace:
+    dest: "{{ dependency[ansible_distribution].checkmk_conf_file }}"
+    regexp: "#only_from.*"
+    replace: "only_from      = {{ hits.omd_server.ip }}"
+  notify: restart xinetd
+  tags:
+    - check_mk_agent
+
+- name: add check_mk firewalld service definition
+  copy:
+    src: "check_mk.xml"
+    dest: "/etc/firewalld/services/check_mk.xml"
+    owner: root
+    group: root
+    mode: 0644
+
+# - name: enable check_mk in firewalld
+#  firewalld:
+#    service: "check_mk"
+#    permanent: true
+#    state: enabled
+
+# the ansible firewalld module seem to have a bug, as adding "immediate=true",
+# which is supposed to start the rule, fails with "INVALID_SERVICE", although
+# a 'firewall-cmd --reload' does it without problem... so at the moment the
+# rule is only installed and enabled, but not activated
+#  firewalld: service="check_mk" permanent=true state=enabled immediate=true

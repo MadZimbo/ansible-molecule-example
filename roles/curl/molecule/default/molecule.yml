@@ -1,0 +1,25 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: ubuntu-latest-curl
+    image: ubuntu:latest
+  - name: ubuntu-16.04-curl
+    image: ubuntu:16.04
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+scenario:
+  name: default
+  ephemeral_directory: /tmp/molecule/curl/.molecule
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+  options:
+    v: 1

@@ -1,0 +1,18 @@
+---
+dependency:
+  packages:
+    - xinetd
+  CentOS:
+    checkmk_conf_file: '/etc/xinetd.d/check_mk'
+  Ubuntu:
+    checkmk_conf_file: '/etc/xinetd.d/check_mk'
+hits:
+  omd_server:
+    ip: '172.16.31.233'
+agent:
+  packages:
+    - check-mk-agent
+  plugins:
+    - lsbrelease
+    - yum
+    - mk_logins

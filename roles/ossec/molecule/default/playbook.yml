@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: all
+  # become: true
+  # user: ubuntu
+  gather_facts: no
+  # pre_tasks:
+  #  - name: 'install python2'
+  #   raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+  #   tags:
+  #    - skip_ansible_lint
+  roles:
+   - role: ossec

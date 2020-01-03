@@ -1,0 +1,14 @@
+---
+# tasks file for apache2
+
+- name: Install apache
+  apt:
+    name: apache2
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install httpd
+  yum:
+    name: httpd
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

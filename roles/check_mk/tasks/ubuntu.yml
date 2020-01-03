@@ -1,0 +1,62 @@
+---
+
+- name: install xinetd and check_mk agent
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dependency.packages }}"
+  tags:
+    - check_mk_agent
+    - update
+
+- name: uninstall old check_mk client
+  package:
+    name: check-mk-agent
+    state: absent
+    purge: yes
+
+- name: remove configuration files and plugins
+  file:
+    path: '{{ item.files }}'
+    state: absent
+  with_items:
+    - { files: '/etc/check_mk' }
+    - { files: '/etc/check-mk-agent' }
+    - { files: '/etc/xinetd.d/check_mk' }
+    - { files: '/usr/lib/check_mk_agent' }
+
+- name: copy newest check_mk client version
+  copy: src=check-mk-agent_1.2.8p26-1_all.deb dest=/ owner=root group=root mode=0700
+
+- name: Install newest check_mk client version
+  command: dpkg -i /check-mk-agent_1.2.8p26-1_all.deb
+  tags:
+    - skip_ansible_lint
+# - name: copy lsbrelease plugin
+#  copy: src=lsbrelease dest=/usr/lib/check_mk_agent/plugins owner=root group=root mode=0755
+
+- name: Sync lsbrelease plugin
+  synchronize: src=lsbrelease dest=/usr/lib/check_mk_agent/plugins checksum=yes archive=no set_remote_user=no
+
+# - name: copy mk_apt plugin
+#  copy: src=mk_apt dest=/usr/lib/check_mk_agent/plugins owner=root group=root mode=0755
+
+- name: Sync mk_apt Plugin
+  synchronize: src=mk_apt dest=/usr/lib/check_mk_agent/plugins checksum=yes archive=yes
+
+- name: Check mk_logins plugin
+  stat: path=/usr/lib/check_mk_agent/plugins
+  register: st
+
+- name: copy mk_logins plugin
+  copy: src=mk_logins dest=/usr/lib/check_mk_agent/plugins owner=root group=root mode=0755
+  when: not st.stat.exists
+
+- name: allow connections from the OMD server
+  replace:
+    dest: "{{ dependency[ansible_distribution].checkmk_conf_file }}"
+    regexp: '#only_from = 127.*'
+    replace: "only_from      = {{ hits.omd_server.ip }}"
+  notify: restart xinetd
+  tags:
+    - check_mk_agent

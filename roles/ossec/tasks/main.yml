@@ -1,0 +1,39 @@
+---
+- name: Checking for Package
+  command: dpkg-query -l ossec-hids-server_3.2.0
+  ignore_errors: True
+  register: deb_check
+  tags:
+     - skip_ansible_lint
+
+- name: Copy Package to target
+  copy: src=ossec-hids-server_3.2.0-6132xenial_amd64.deb dest=/tmp/
+
+
+- name: Install OSSEC .deb package
+  apt:
+     deb: /tmp/ossec-hids-server_3.2.0-6132xenial_amd64.deb
+     dpkg_options: 'force-confold,force-confdef'
+  ignore_errors: yes
+  environment:
+     DEBIAN_FRONTEND: noninteractive
+  register: ossecInstalled
+  when: deb_check is failed
+
+- name: Install missing dependencies
+  command: 'apt-get install -y -f warn=no'
+  when: ossecInstalled.changed
+  tags:
+     - skip_ansible_lint
+
+- name: Copy ossec.conf template to destination
+  template: src=ossec.conf.j2 dest=/var/ossec/etc/ossec.conf
+  tags:
+     - ConfigOnly
+
+- name: Copy local_rules.xml template to destination
+  template: src=local_rules.xml.j2 dest=/var/ossec/rules/local_rules.xml
+  notify:
+     - reload ossec
+  tags:
+     - ConfigOnly

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>check_mk</short>
+  <description>check_mk system monitoring</description>
+  <port protocol="tcp" port="6556"/>
+</service>
